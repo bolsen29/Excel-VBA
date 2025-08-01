@@ -1,0 +1,131 @@
+Sub UpdateAllIOByEnclosure()
+    Dim ws As Worksheet
+    Set ws = ThisWorkbook.Sheets("Signals")
+    
+    Dim en As Worksheet
+    Set en = ThisWorkbook.Sheets("Enclosures")
+    
+    Dim lastRow As Long
+    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+    
+    Dim EnLastRow As Long
+    EnLastRow = en.Cells(ws.Rows.Count, "A").End(xlUp).Row
+    
+    Dim enclosureArray() As String
+    Dim Count As Long
+    Count = 0
+    
+    
+    
+    Dim i As Long
+    For i = 2 To EnLastRow
+        If en.Cells(i, 2).Value <> "" Then
+            ReDim Preserve enclosureArray(Count)
+            enclosureArray(Count) = en.Cells(i, 2).Value
+            Count = Count + 1
+        End If
+    Next i
+    
+
+    
+    Dim j As Long
+    For j = 0 To Count - 1
+        Dim state(2) As Long
+        state(0) = 1
+        state(1) = 1
+        state(2) = 0
+''''''''''''''''''''''''DI'''''''''''''''''''''''''
+        For i = 2 To lastRow
+            If ws.Cells(i, 4).Value = enclosureArray(j) Then
+                If ws.Cells(i, 1).Value = "DI" Then
+                    ' Always update Rack, Slot, and IO Point
+                    ws.Cells(i, 5).Value = state(0) ' Rack
+                    ws.Cells(i, 6).Value = state(1) ' Slot
+                    ws.Cells(i, 7).Value = state(2) ' IO Point
+                    state(2) = state(2) + 1         ' Update State
+                    If state(2) >= 16 Then
+                        state(1) = state(1) + 1
+                        state(2) = 0
+                        If state(1) >= 16 Then
+                            state(0) = state(0) + 1
+                            state(1) = 1
+                            state(2) = 0
+                        End If
+                    End If
+                End If
+            End If
+        Next i
+'''''''''''''''''''''DO'''''''''''''''''''''''''''''''''''
+        state(1) = state(1) + 1
+        state(2) = 0 ' reset the state count
+        For i = 2 To lastRow
+            If ws.Cells(i, 4).Value = enclosureArray(j) Then
+                If ws.Cells(i, 1).Value = "DO" Then
+                    ' Always update Rack, Slot, and IO Point
+                    ws.Cells(i, 5).Value = state(0) ' Rack
+                    ws.Cells(i, 6).Value = state(1) ' Slot
+                    ws.Cells(i, 7).Value = state(2) ' IO Point
+                    state(2) = state(2) + 1         ' Update State
+                    If state(2) >= 16 Then
+                        state(1) = state(1) + 1
+                        state(2) = 0
+                        If state(1) >= 16 Then
+                            state(0) = state(0) + 1
+                            state(1) = 1
+                            state(2) = 0
+                        End If
+                    End If
+                End If
+            End If
+        Next i
+'''''''''''''''''''''''''''''AI''''''''''''''''''''''''''''
+        state(1) = state(1) + 1
+        state(2) = 0 ' reset the state count
+        For i = 2 To lastRow
+        If ws.Cells(i, 4).Value = enclosureArray(j) Then
+                If ws.Cells(i, 1).Value = "AI" Then
+                    ' Always update Rack, Slot, and IO Point
+                    ws.Cells(i, 5).Value = state(0) ' Rack
+                    ws.Cells(i, 6).Value = state(1) ' Slot
+                    ws.Cells(i, 7).Value = state(2) ' IO Point
+                    state(2) = state(2) + 1         ' Update State
+                    If state(2) >= 8 Then
+                        state(1) = state(1) + 1
+                        state(2) = 0
+                        If state(1) >= 16 Then
+                            state(0) = state(0) + 1
+                            state(1) = 1
+                            state(2) = 0
+                        End If
+                    End If
+                End If
+            End If
+        Next i
+''''''''''''''''''''''''''''AO''''''''''''''''''''''''''''''
+        state(1) = state(1) + 1
+        state(2) = 0 ' reset the state count
+        For i = 2 To lastRow
+            If ws.Cells(i, 4).Value = enclosureArray(j) Then
+                If ws.Cells(i, 1).Value = "AO" Then
+                    ' Always update Rack, Slot, and IO Point
+                    ws.Cells(i, 5).Value = state(0) ' Rack
+                    ws.Cells(i, 6).Value = state(1) ' Slot
+                    ws.Cells(i, 7).Value = state(2) ' IO Point
+                    state(2) = state(2) + 1         ' Update State
+                    If state(2) >= 8 Then
+                        state(1) = state(1) + 1
+                        state(2) = 0
+                        If state(1) >= 16 Then
+                            state(0) = state(0) + 1
+                            state(1) = 1
+                            state(2) = 0
+                        End If
+                    End If
+                End If
+            End If
+        Next i
+    Next j
+End Sub
+
+
+
