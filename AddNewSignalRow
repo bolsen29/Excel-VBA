@@ -1,0 +1,26 @@
+Sub AddNewSignalRow()
+    Dim ws As Worksheet
+    Set ws = ThisWorkbook.Sheets("Signals")
+    
+    Dim lastRow As Long
+    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row + 1
+    
+    ' Copy formatting from the previous row
+    ws.Rows(lastRow - 1).Copy
+    ws.Rows(lastRow).PasteSpecial Paste:=xlPasteFormats
+    
+    ' Set default values
+    ws.Cells(lastRow, 1).Value = "DI" ' Default signal type
+    ws.Cells(lastRow, 2).Value = "TAG"
+    ws.Cells(lastRow, 5).Value = "00"
+    ws.Cells(lastRow, 6).Value = "00"
+    ws.Cells(lastRow, 7).Value = "00"
+    
+    ' Dynamic formulas
+    ws.Cells(lastRow, 8).Formula = "=CONCAT(A" & lastRow & ", "": "", D" & lastRow & ", ""."", E" & lastRow & ", TEXT(F" & lastRow & ", ""00""), ""/"", TEXT(G" & lastRow & ", ""00""))"
+    ws.Cells(lastRow, 13).Formula = "=ISNA(MATCH(D" & lastRow & ",Enclosures!B:B,0))"
+    ws.Cells(lastRow, 14).Formula = "=OR(AND(LEFT(A" & lastRow & ",1)=""A"",NOT(LEFT(K" & lastRow & ",4)=""4-20"")),AND(LEFT(K" & lastRow & ",4)=""4-20"",NOT(LEFT(A" & lastRow & ",1)=""A"")))"
+    
+    Application.CutCopyMode = False
+    ' MsgBox "New signal row added at row " & lastRow
+End Sub
