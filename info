@@ -1,0 +1,4 @@
+Sub info()
+    MsgBox "Fill out Each Column as best you can. Many of the buttons rely on the list to be filled out. The STYLE column expects the inputs to be either LCS, ZS, MOVE, FF, or CV. These respectively Local Control Station, Limit Switch, Move, Fluidized Floor, or Control Valve. It is necessary that it is filled out to calculate the Cable Grouping.", vbInformation, "Table Info"
+
+End Sub
