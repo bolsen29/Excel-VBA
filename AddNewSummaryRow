@@ -1,0 +1,35 @@
+Sub AddNewSummaryRow()
+    Dim ws As Worksheet
+    Dim lastRow As Long
+
+    ' Set your worksheet
+    Set ws = ThisWorkbook.Sheets("Summary") ' Change to your sheet name
+
+    ' Find the last used row in column A
+    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+
+    ' Copy the last row
+    ws.Rows(lastRow).Copy
+
+    ' Insert a new row below the copied row
+    insertRow = lastRow + 1
+    ws.Rows(insertRow).Insert Shift:=xlDown
+    
+    ws.Cells(insertRow, 1).Value = "Enclosure"
+    ws.Cells(insertRow, 22).Value = "0"
+    ws.Cells(insertRow, 23).Value = "0"
+    ws.Cells(insertRow, 24).Value = "0"
+    ws.Cells(insertRow, 25).Value = "0"
+
+    ' Paste everything (including formulas, formatting, etc.)
+    ' No need for PasteSpecial — the default paste includes formulas
+    
+    
+    ' Optional: Clear clipboard
+    Application.CutCopyMode = False
+
+End Sub
+
+
+
+
