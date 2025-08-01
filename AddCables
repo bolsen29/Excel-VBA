@@ -1,0 +1,627 @@
+Sub AddCables()
+    Dim cbl As Worksheet
+    Set cbl = ThisWorkbook.Sheets("Cables")
+    
+    Dim sgl As Worksheet
+    Set sgl = ThisWorkbook.Sheets("Signals")
+    
+    Dim en As Worksheet
+    Set en = ThisWorkbook.Sheets("Enclosures")
+    
+    Dim sLastRow As Long
+    sLastRow = sgl.Cells(sgl.Rows.Count, "A").End(xlUp).Row
+    
+    Dim eLastRow As Long
+    eLastRow = en.Cells(en.Rows.Count, "A").End(xlUp).Row
+    
+    Dim j As Long       ' Row index for the Cables sheet
+    j = 2
+    Dim k As Long       ' Row index for the Enclosures sheet
+    Dim i As Long       ' Row index for the Signals sheet
+    Dim LCS As Long
+    Dim Count As Long
+    Dim StartLCS_Tag As String
+    Dim StartLCS_Desc As String
+    Dim FF As Long
+    Dim Tag As String
+    Dim StartRow As Long
+    Dim EndRow As Long
+
+    For i = 2 To sLastRow
+    '''''''''''''''''''AI''''''''''''''''''''''''''''''''''''''''
+        If sgl.Cells(i, 1).Value = "AI" Then
+            ' Equipment Tag
+            cbl.Cells(j, 1).Value = sgl.Cells(i, 2).Value
+            cbl.Cells(j, 4).Value = sgl.Cells(i, 2).Value
+            
+            ' Signal ID
+            cbl.Cells(j, 2).Value = sgl.Cells(i, 3).Value
+            
+            ' Origin (from Enclosures sheet)
+            For k = 2 To eLastRow
+                If en.Cells(k, 2).Value = sgl.Cells(i, 4).Value Then
+                    cbl.Cells(j, 3).Value = en.Cells(k, 5).Value & " " & en.Cells(k, 4).Value
+                    Exit For ' Stop after first match
+                End If
+            Next k
+            
+            ' Voltage
+            cbl.Cells(j, 9).Value = sgl.Cells(i, 11).Value
+            
+            ' Conductors
+            cbl.Cells(j, 5).Value = "(1) 3/C - "
+            
+            ' AWG
+            cbl.Cells(j, 6).Value = "#16 (SIG) - "
+            
+            ' TYPE
+            cbl.Cells(j, 7).Value = "TWISTED SHIELDED TRIAD"
+            
+            ' Cable Group
+            cbl.Cells(j, 8).Value = cbl.Cells(j, 5).Value & cbl.Cells(j, 6).Value & cbl.Cells(j, 7).Value
+            
+            j = j + 1 ' Move to next row in Cables sheet
+        End If
+        '''''''''''''''''''''''''AO''''''''''''''''''''''''''
+        If sgl.Cells(i, 1).Value = "AO" Then
+            ' Equipment Tag
+            cbl.Cells(j, 1).Value = sgl.Cells(i, 2).Value
+            cbl.Cells(j, 4).Value = sgl.Cells(i, 2).Value
+            
+            ' Signal ID
+            cbl.Cells(j, 2).Value = sgl.Cells(i, 3).Value
+            
+            ' Origin (from Enclosures sheet)
+            For k = 2 To eLastRow
+                If en.Cells(k, 2).Value = sgl.Cells(i, 4).Value Then
+                    cbl.Cells(j, 3).Value = en.Cells(k, 5).Value & " " & en.Cells(k, 4).Value
+                    Exit For ' Stop after first match
+                End If
+            Next k
+            
+            ' Voltage
+            cbl.Cells(j, 9).Value = sgl.Cells(i, 11).Value
+            
+            ' Conductors
+            cbl.Cells(j, 5).Value = "(1) 3/C - "
+            
+            ' AWG
+            cbl.Cells(j, 6).Value = "#16 (SIG) - "
+            
+            ' TYPE
+            cbl.Cells(j, 7).Value = "TWISTED SHIELDED TRIAD"
+            
+            ' Cable Group
+            cbl.Cells(j, 8).Value = cbl.Cells(j, 5).Value & cbl.Cells(j, 6).Value & cbl.Cells(j, 7).Value
+            
+            j = j + 1 ' Move to next row in Cables sheet
+        End If
+    ''''''''''''''''''''DI'''''''''''''''''''
+        If sgl.Cells(i, 1).Value = "DI" Then ' Check if Type is DI
+        
+        ''''''''''''''''''''''''''''''''''''''''LCS'''''''''''''''''''''''''''''''''''''''
+            If sgl.Cells(i, 10).Value = "LCS" Then ' Check if it's an LCS
+                Count = 0
+                StartLCS_Tag = sgl.Cells(i, 2).Value
+                StartLCS_Desc = sgl.Cells(i, 10).Value
+                LCS = i
+            
+                ' Loop while the tag matches and description is still "LCS"
+                Do While LCS <= sLastRow And _
+                    sgl.Cells(LCS, 2).Value = StartLCS_Tag And _
+                    sgl.Cells(LCS, 10).Value = "LCS"
+                 
+                    Count = Count + 1
+                    LCS = LCS + 1
+                Loop
+        
+                ' Equipment Tag
+                cbl.Cells(j, 1).Value = sgl.Cells(i, 2).Value
+                cbl.Cells(j, 4).Value = sgl.Cells(i, 2).Value
+        
+                ' Signal ID
+                cbl.Cells(j, 2).Value = sgl.Cells(i, 2).Value & " LCS"
+        
+                ' Origin (from Enclosures sheet)
+                For k = 2 To eLastRow
+                    If en.Cells(k, 2).Value = sgl.Cells(i, 4).Value Then
+                        cbl.Cells(j, 3).Value = en.Cells(k, 5).Value & " " & en.Cells(k, 4).Value
+                        Exit For
+                    End If
+                Next k
+        
+                ' Voltage
+                cbl.Cells(j, 9).Value = sgl.Cells(i, 11).Value
+        
+                ' Conductors (count + 1 to include common wire)
+                cbl.Cells(j, 5).Value = "(1) " & (Count + 1) & "/C - "
+        
+                ' AWG
+                cbl.Cells(j, 6).Value = "#16 (DIG) - "
+        
+                ' TYPE
+                cbl.Cells(j, 7).Value = "TYPE TC-ER (THHN)"
+            
+                ' Cable Group
+                cbl.Cells(j, 8).Value = cbl.Cells(j, 5).Value & cbl.Cells(j, 6).Value & cbl.Cells(j, 7).Value
+        
+                j = j + 1 ' Move to next row in Cables sheet
+                i = LCS   ' Skip to the next unprocessed row
+            End If
+            
+            '''''''''''''''''''''''''''''Control Valves'''''''''''''''''''''''''''''''''
+            If sgl.Cells(i, 10).Value = "CV" Then
+                    
+                Tag = sgl.Cells(i, 2).Value
+                StartRow = i
+                Count = 0
+                    
+                ' Count how many consecutive signals share the same tag
+                Do While i <= sLastRow And _
+                        ((sgl.Cells(i, 1).Value = "DO" Or sgl.Cells(i, 1).Value = "DI") And _
+                        sgl.Cells(i, 10).Value = "CV" And _
+                        sgl.Cells(i, 2).Value = Tag)
+                             
+                    Count = Count + 1
+                    i = i + 1
+                Loop
+                    
+                EndRow = i - 1
+                    
+                ' Now write one cable entry for the group
+                cbl.Cells(j, 1).Value = Tag
+                cbl.Cells(j, 4).Value = Tag
+                cbl.Cells(j, 2).Value = Tag & " VALVE"
+                    
+                ' Origin (from Enclosures sheet)
+                For k = 2 To eLastRow
+                    If en.Cells(k, 2).Value = sgl.Cells(StartRow, 4).Value Then
+                        cbl.Cells(j, 3).Value = en.Cells(k, 5).Value & " " & en.Cells(k, 4).Value
+                        Exit For
+                    End If
+                Next k
+                    
+                ' Voltage
+                cbl.Cells(j, 9).Value = sgl.Cells(StartRow, 11).Value
+                    
+                ' Conductors (add 1 for common)
+                cbl.Cells(j, 5).Value = "(1) " & (Count + 1) & "/C - "
+                    
+                ' AWG
+                cbl.Cells(j, 6).Value = "#16 (DIG) - "
+                    
+                ' TYPE
+                cbl.Cells(j, 7).Value = "TYPE TC-ER"
+                    
+                ' Cable Group
+                cbl.Cells(j, 8).Value = cbl.Cells(j, 5).Value & cbl.Cells(j, 6).Value & cbl.Cells(j, 7).Value
+                    
+                j = j + 1 ' Move to next row in Cables sheet
+            End If
+        
+        ''''''''''''''''''''''Fluidized Floor'''''''''''''''''''''''''''''''''
+            
+            If sgl.Cells(i, 10).Value = "FF" Then
+                    
+                Tag = sgl.Cells(i, 2).Value
+                StartRow = i
+                Count = 0
+                    
+                ' Count how many consecutive signals share the same tag
+                Do While i <= sLastRow And _
+                        ((sgl.Cells(i, 1).Value = "DO" Or sgl.Cells(i, 1).Value = "DI") And _
+                        sgl.Cells(i, 10).Value = "FF" And _
+                        sgl.Cells(i, 2).Value = Tag)
+                             
+                    Count = Count + 1
+                    i = i + 1
+                Loop
+                    
+                EndRow = i - 1
+                    
+                ' Now write one cable entry for the group
+                cbl.Cells(j, 1).Value = Tag
+                cbl.Cells(j, 4).Value = Tag
+                cbl.Cells(j, 2).Value = Tag & " VALVE"
+                    
+                ' Origin (from Enclosures sheet)
+                For k = 2 To eLastRow
+                    If en.Cells(k, 2).Value = sgl.Cells(StartRow, 4).Value Then
+                        cbl.Cells(j, 3).Value = en.Cells(k, 5).Value & " " & en.Cells(k, 4).Value
+                        Exit For
+                    End If
+                Next k
+                    
+                ' Voltage
+                cbl.Cells(j, 9).Value = sgl.Cells(StartRow, 11).Value
+                    
+                ' Conductors (add 1 for common)
+                cbl.Cells(j, 5).Value = "(1) " & (Count + 1) & "/C - "
+                    
+                ' AWG
+                cbl.Cells(j, 6).Value = "#16 (DIG) - "
+                    
+                ' TYPE
+                cbl.Cells(j, 7).Value = "TYPE TC-ER"
+                    
+                ' Cable Group
+                cbl.Cells(j, 8).Value = cbl.Cells(j, 5).Value & cbl.Cells(j, 6).Value & cbl.Cells(j, 7).Value
+                    
+                j = j + 1 ' Move to next row in Cables sheet
+            End If
+            
+    ''''''''''''''''''''''Limit Switches'''''''''''''''''''''''''''''''''
+            
+            If sgl.Cells(i, 10).Value = "ZS" Then
+                    
+                Tag = sgl.Cells(i, 2).Value
+                StartRow = i
+                Count = 0
+                    
+                ' Count how many consecutive signals share the same tag
+                Do While i <= sLastRow And _
+                        ((sgl.Cells(i, 1).Value = "DO" Or sgl.Cells(i, 1).Value = "DI") And _
+                        sgl.Cells(i, 10).Value = "ZS" And _
+                        sgl.Cells(i, 2).Value = Tag)
+                             
+                    Count = Count + 1
+                    i = i + 1
+                Loop
+                    
+                EndRow = i - 1
+                    
+                ' Now write one cable entry for the group
+                cbl.Cells(j, 1).Value = Tag
+                cbl.Cells(j, 4).Value = Tag
+                cbl.Cells(j, 2).Value = Tag & " VALVE"
+                    
+                ' Origin (from Enclosures sheet)
+                For k = 2 To eLastRow
+                    If en.Cells(k, 2).Value = sgl.Cells(StartRow, 4).Value Then
+                        cbl.Cells(j, 3).Value = en.Cells(k, 5).Value & " " & en.Cells(k, 4).Value
+                        Exit For
+                    End If
+                Next k
+                    
+                ' Voltage
+                cbl.Cells(j, 9).Value = sgl.Cells(StartRow, 11).Value
+                    
+                ' Conductors (add 1 for common)
+                cbl.Cells(j, 5).Value = "(1) " & (Count + 1) & "/C - "
+                    
+                ' AWG
+                cbl.Cells(j, 6).Value = "#16 (DIG) - "
+                    
+                ' TYPE
+                cbl.Cells(j, 7).Value = "TYPE TC-ER"
+                    
+                ' Cable Group
+                cbl.Cells(j, 8).Value = cbl.Cells(j, 5).Value & cbl.Cells(j, 6).Value & cbl.Cells(j, 7).Value
+                    
+                j = j + 1 ' Move to next row in Cables sheet
+                End If
+                
+''''''''''''''''''''''MOVE SIGNALS'''''''''''''''''''''''''''''''''
+            If sgl.Cells(i, 10).Value = "MOVE" Then
+                    
+                Tag = sgl.Cells(i, 2).Value
+                StartRow = i
+                Count = 0
+                    
+                ' Count how many consecutive signals share the same tag
+                Do While i <= sLastRow And _
+                        ((sgl.Cells(i, 1).Value = "DO" Or sgl.Cells(i, 1).Value = "DI") And _
+                        sgl.Cells(i, 10).Value = "MOVE" And _
+                        sgl.Cells(i, 2).Value = Tag)
+                             
+                    Count = Count + 1
+                    i = i + 1
+                Loop
+                    
+                EndRow = i - 1
+                    
+                ' Now write one cable entry for the group
+                cbl.Cells(j, 1).Value = Tag
+                cbl.Cells(j, 4).Value = Tag
+                cbl.Cells(j, 2).Value = Tag & " VALVE"
+                    
+                ' Origin (from Enclosures sheet)
+                For k = 2 To eLastRow
+                    If en.Cells(k, 2).Value = sgl.Cells(StartRow, 4).Value Then
+                        cbl.Cells(j, 3).Value = en.Cells(k, 5).Value & " " & en.Cells(k, 4).Value
+                        Exit For
+                    End If
+                Next k
+                    
+                ' Voltage
+                cbl.Cells(j, 9).Value = sgl.Cells(StartRow, 11).Value
+                    
+                ' Conductors (add 1 for common)
+                cbl.Cells(j, 5).Value = "(1) " & (Count + 1) & "/C - "
+                    
+                ' AWG
+                cbl.Cells(j, 6).Value = "#16 (DIG) - "
+                    
+                ' TYPE
+                cbl.Cells(j, 7).Value = "TYPE TC-ER"
+                    
+                ' Cable Group
+                cbl.Cells(j, 8).Value = cbl.Cells(j, 5).Value & cbl.Cells(j, 6).Value & cbl.Cells(j, 7).Value
+                    
+                j = j + 1 ' Move to next row in Cables sheet
+            End If
+        Else
+            ' Equipment Tag
+            cbl.Cells(j, 1).Value = sgl.Cells(i, 2).Value
+            cbl.Cells(j, 4).Value = sgl.Cells(i, 2).Value
+            
+            ' Signal ID
+            cbl.Cells(j, 2).Value = sgl.Cells(i, 3).Value
+            
+            ' Origin (from Enclosures sheet)
+            For k = 2 To eLastRow
+                If en.Cells(k, 2).Value = sgl.Cells(i, 4).Value Then
+                    cbl.Cells(j, 3).Value = en.Cells(k, 5).Value & " " & en.Cells(k, 4).Value
+                    Exit For ' Stop after first match
+                End If
+            Next k
+            
+            ' Voltage
+            cbl.Cells(j, 9).Value = sgl.Cells(i, 11).Value
+            
+            ' Conductors
+            cbl.Cells(j, 5).Value = "(1) 2/C - "
+            
+            ' AWG
+            cbl.Cells(j, 6).Value = "#16 (SIG) - "
+            
+            ' TYPE
+            cbl.Cells(j, 7).Value = "TYPE (TC-ER)"
+            
+            ' Cable Group
+            cbl.Cells(j, 8).Value = cbl.Cells(j, 5).Value & cbl.Cells(j, 6).Value & cbl.Cells(j, 7).Value
+            
+            j = j + 1 ' Move to next row in Cables sheet
+        End If
+        
+        '''''''''''''''''''''''DO'''''''''''''''''''''''''''''''''''''''''''
+        If sgl.Cells(i, 1) = "DO" Then
+        
+        ''''''''''''''''''''''Control Valves''''''''''''''''''''''''''''''''
+            If sgl.Cells(i, 10).Value = "CV" Then
+                    
+                Tag = sgl.Cells(i, 2).Value
+                StartRow = i
+                Count = 0
+                    
+                ' Count how many consecutive signals share the same tag
+                Do While i <= sLastRow And _
+                        ((sgl.Cells(i, 1).Value = "DO" Or sgl.Cells(i, 1).Value = "DI") And _
+                        sgl.Cells(i, 10).Value = "CV" And _
+                        sgl.Cells(i, 2).Value = Tag)
+                             
+                    Count = Count + 1
+                    i = i + 1
+                Loop
+                    
+                EndRow = i - 1
+                    
+                ' Now write one cable entry for the group
+                cbl.Cells(j, 1).Value = Tag
+                cbl.Cells(j, 4).Value = Tag
+                cbl.Cells(j, 2).Value = Tag & " VALVE"
+                    
+                ' Origin (from Enclosures sheet)
+                For k = 2 To eLastRow
+                    If en.Cells(k, 2).Value = sgl.Cells(StartRow, 4).Value Then
+                        cbl.Cells(j, 3).Value = en.Cells(k, 5).Value & " " & en.Cells(k, 4).Value
+                        Exit For
+                    End If
+                Next k
+                    
+                ' Voltage
+                cbl.Cells(j, 9).Value = sgl.Cells(StartRow, 11).Value
+                    
+                ' Conductors (add 1 for common)
+                cbl.Cells(j, 5).Value = "(1) " & (Count + 1) & "/C - "
+                    
+                ' AWG
+                cbl.Cells(j, 6).Value = "#16 (DIG) - "
+                    
+                ' TYPE
+                cbl.Cells(j, 7).Value = "TYPE TC-ER"
+                    
+                ' Cable Group
+                cbl.Cells(j, 8).Value = cbl.Cells(j, 5).Value & cbl.Cells(j, 6).Value & cbl.Cells(j, 7).Value
+                    
+                j = j + 1 ' Move to next row in Cables sheet
+            End If
+        
+        ''''''''''''''''''''''Fluidized Floor'''''''''''''''''''''''''''''''''
+            
+            If sgl.Cells(i, 10).Value = "FF" Then
+                    
+                Tag = sgl.Cells(i, 2).Value
+                StartRow = i
+                Count = 0
+                    
+                ' Count how many consecutive signals share the same tag
+                Do While i <= sLastRow And _
+                        ((sgl.Cells(i, 1).Value = "DO" Or sgl.Cells(i, 1).Value = "DI") And _
+                        sgl.Cells(i, 10).Value = "FF" And _
+                        sgl.Cells(i, 2).Value = Tag)
+                             
+                    Count = Count + 1
+                    i = i + 1
+                Loop
+                    
+                EndRow = i - 1
+                    
+                ' Now write one cable entry for the group
+                cbl.Cells(j, 1).Value = Tag
+                cbl.Cells(j, 4).Value = Tag
+                cbl.Cells(j, 2).Value = Tag & " VALVE"
+                    
+                ' Origin (from Enclosures sheet)
+                For k = 2 To eLastRow
+                    If en.Cells(k, 2).Value = sgl.Cells(StartRow, 4).Value Then
+                        cbl.Cells(j, 3).Value = en.Cells(k, 5).Value & " " & en.Cells(k, 4).Value
+                        Exit For
+                    End If
+                Next k
+                    
+                ' Voltage
+                cbl.Cells(j, 9).Value = sgl.Cells(StartRow, 11).Value
+                    
+                ' Conductors (add 1 for common)
+                cbl.Cells(j, 5).Value = "(1) " & (Count + 1) & "/C - "
+                    
+                ' AWG
+                cbl.Cells(j, 6).Value = "#16 (DIG) - "
+                    
+                ' TYPE
+                cbl.Cells(j, 7).Value = "TYPE TC-ER"
+                    
+                ' Cable Group
+                cbl.Cells(j, 8).Value = cbl.Cells(j, 5).Value & cbl.Cells(j, 6).Value & cbl.Cells(j, 7).Value
+                    
+                j = j + 1 ' Move to next row in Cables sheet
+                End If
+                 ''''''''''''''''''''''Limit Switches'''''''''''''''''''''''''''''''''
+            
+            If sgl.Cells(i, 10).Value = "ZS" Then
+                    
+                Tag = sgl.Cells(i, 2).Value
+                StartRow = i
+                Count = 0
+                    
+                ' Count how many consecutive signals share the same tag
+                Do While i <= sLastRow And _
+                        ((sgl.Cells(i, 1).Value = "DO" Or sgl.Cells(i, 1).Value = "DI") And _
+                        sgl.Cells(i, 10).Value = "ZS" And _
+                        sgl.Cells(i, 2).Value = Tag)
+                             
+                    Count = Count + 1
+                    i = i + 1
+                Loop
+                    
+                EndRow = i - 1
+                    
+                ' Now write one cable entry for the group
+                cbl.Cells(j, 1).Value = Tag
+                cbl.Cells(j, 4).Value = Tag
+                cbl.Cells(j, 2).Value = Tag & " VALVE"
+                    
+                ' Origin (from Enclosures sheet)
+                For k = 2 To eLastRow
+                    If en.Cells(k, 2).Value = sgl.Cells(StartRow, 4).Value Then
+                        cbl.Cells(j, 3).Value = en.Cells(k, 5).Value & " " & en.Cells(k, 4).Value
+                        Exit For
+                    End If
+                Next k
+                    
+                ' Voltage
+                cbl.Cells(j, 9).Value = sgl.Cells(StartRow, 11).Value
+                    
+                ' Conductors (add 1 for common)
+                cbl.Cells(j, 5).Value = "(1) " & (Count + 1) & "/C - "
+                    
+                ' AWG
+                cbl.Cells(j, 6).Value = "#16 (DIG) - "
+                    
+                ' TYPE
+                cbl.Cells(j, 7).Value = "TYPE TC-ER"
+                    
+                ' Cable Group
+                cbl.Cells(j, 8).Value = cbl.Cells(j, 5).Value & cbl.Cells(j, 6).Value & cbl.Cells(j, 7).Value
+                    
+                j = j + 1 ' Move to next row in Cables sheet
+                End If
+                ''''''''''''''''''''''MOVE SIGNALS'''''''''''''''''''''''''''''''''
+            
+            If sgl.Cells(i, 10).Value = "MOVE" Then
+                    
+                Tag = sgl.Cells(i, 2).Value
+                StartRow = i
+                Count = 0
+                    
+                ' Count how many consecutive signals share the same tag
+                Do While i <= sLastRow And _
+                        ((sgl.Cells(i, 1).Value = "DO" Or sgl.Cells(i, 1).Value = "DI") And _
+                        sgl.Cells(i, 10).Value = "MOVE" And _
+                        sgl.Cells(i, 2).Value = Tag)
+                             
+                    Count = Count + 1
+                    i = i + 1
+                Loop
+                    
+                EndRow = i - 1
+                    
+                ' Now write one cable entry for the group
+                cbl.Cells(j, 1).Value = Tag
+                cbl.Cells(j, 4).Value = Tag
+                cbl.Cells(j, 2).Value = Tag & " VALVE"
+                    
+                ' Origin (from Enclosures sheet)
+                For k = 2 To eLastRow
+                    If en.Cells(k, 2).Value = sgl.Cells(StartRow, 4).Value Then
+                        cbl.Cells(j, 3).Value = en.Cells(k, 5).Value & " " & en.Cells(k, 4).Value
+                        Exit For
+                    End If
+                Next k
+                    
+                ' Voltage
+                cbl.Cells(j, 9).Value = sgl.Cells(StartRow, 11).Value
+                    
+                ' Conductors (add 1 for common)
+                cbl.Cells(j, 5).Value = "(1) " & (Count + 1) & "/C - "
+                    
+                ' AWG
+                cbl.Cells(j, 6).Value = "#16 (DIG) - "
+                    
+                ' TYPE
+                cbl.Cells(j, 7).Value = "TYPE TC-ER"
+                    
+                ' Cable Group
+                cbl.Cells(j, 8).Value = cbl.Cells(j, 5).Value & cbl.Cells(j, 6).Value & cbl.Cells(j, 7).Value
+                    
+                j = j + 1 ' Move to next row in Cables sheet
+            End If
+        Else
+            ' Equipment Tag
+            cbl.Cells(j, 1).Value = sgl.Cells(i, 2).Value
+            cbl.Cells(j, 4).Value = sgl.Cells(i, 2).Value
+            
+            ' Signal ID
+            cbl.Cells(j, 2).Value = sgl.Cells(i, 3).Value
+            
+            ' Origin (from Enclosures sheet)
+            For k = 2 To eLastRow
+                If en.Cells(k, 2).Value = sgl.Cells(i, 4).Value Then
+                    cbl.Cells(j, 3).Value = en.Cells(k, 5).Value & " " & en.Cells(k, 4).Value
+                    Exit For ' Stop after first match
+                End If
+            Next k
+            
+            ' Voltage
+            cbl.Cells(j, 9).Value = sgl.Cells(i, 11).Value
+            
+            ' Conductors
+            cbl.Cells(j, 5).Value = "(1) 2/C - "
+            
+            ' AWG
+            cbl.Cells(j, 6).Value = "#16 (SIG) - "
+            
+            ' TYPE
+            cbl.Cells(j, 7).Value = "TYPE (TC-ER)"
+            
+            ' Cable Group
+            cbl.Cells(j, 8).Value = cbl.Cells(j, 5).Value & cbl.Cells(j, 6).Value & cbl.Cells(j, 7).Value
+            
+            j = j + 1 ' Move to next row in Cables sheet
+        End If
+    Next i
+MsgBox "Note: The Added Cables are based on generalized assumptions. Please Verify accuracy before final use. If you have made edits to this Cabels list, DO NOT press the Add Cables button again as this will re-create the list.", vbExclamation, "Assumption Warning"
+End Sub
+
+
